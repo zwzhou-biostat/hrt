@@ -79,9 +79,15 @@ estimate_R_adj_inc <- function(incidence_data, P, si_shape, si_rate, si_t_max, s
   w <- w/sum(w)
   
   ## adjust the incidence with P matrix
-  incidence_data_nomix <- do.call("rbind", lapply(1:nrow(incidence_data), function(x){
-    unlist(incidence_data[x, ]) %*% solve(P)
-  }))
+  if(is.list(P) == T){
+    incidence_data_nomix <- do.call("rbind", lapply(1:nrow(case_matrix), function(x){
+      unlist(case_matrix[x, ]) %*% solve(P[[x]])
+    }))
+  }else if(is.matrix(P) == T){
+    incidence_data_nomix <- do.call("rbind", lapply(1:nrow(incidence_data), function(x){
+      unlist(incidence_data[x, ]) %*% solve(P)
+    }))
+  }
   
   ## set negative incidence to zero for computation considerations
   incidence_data_nomix[incidence_data_nomix<0] <- exp(incidence_data_nomix[incidence_data_nomix<0])
